@@ -91,7 +91,7 @@ Ensure Docker and Docker Compose are installed:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/SandyTechWise/sensa-ai.git
+git clone https://github.com/Senkathirselvan/sensa-ai.git
 cd sensa-ai
 
 # 2. Configure environment keys
@@ -161,7 +161,7 @@ To stop all services:
 
 **S. Senkathirselvan**  
 - **Role:** Python Backend Developer & Distributed Multi-Agent Architect  
-- **GitHub:** [@SandyTechWise](https://github.com/SandyTechWise)  
+- **GitHub:** [@Senkathirselvan](https://github.com/Senkathirselvan)  
 - **LinkedIn:** [linkedin.com/in/senkathirselvan-python-developer](https://linkedin.com/in/senkathirselvan-python-developer)  
 - **Email:** senkathircomp@gmail.com
 
@@ -170,3 +170,4 @@ To stop all services:
 ## 📄 License
 
 This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+
