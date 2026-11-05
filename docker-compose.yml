@@ -1,0 +1,122 @@
+version: '3.8'
+
+services:
+  # -------------------------------------------------------------
+  # 🗄️ PostgreSQL 16 Database
+  # -------------------------------------------------------------
+  db:
+    image: postgres:16-alpine
+    container_name: sensa-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-jobagent}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-jobagent_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-jobagent_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-jobagent} -d ${POSTGRES_DB:-jobagent_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # -------------------------------------------------------------
+  # 🔎 Agent 1: Job Discovery & Tracker (Port 8000)
+  # -------------------------------------------------------------
+  job-find-agent:
+    build:
+      context: ./job-find-agent
+      dockerfile: backend/Dockerfile
+    container_name: sensa-job-find-agent
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-jobagent}:${POSTGRES_PASSWORD:-jobagent_secret}@db:5432/${POSTGRES_DB:-jobagent_db}
+      - NVIDIA_API_KEY=${NVIDIA_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # -------------------------------------------------------------
+  # 📄 Agent 2: ATS Resume Generator & Tailor (Port 8001)
+  # -------------------------------------------------------------
+  resume-prep-agent:
+    build:
+      context: ./resume-prep-agent
+      dockerfile: Dockerfile
+    container_name: sensa-resume-prep-agent
+    restart: always
+    ports:
+      - "8001:8001"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-jobagent}:${POSTGRES_PASSWORD:-jobagent_secret}@db:5432/${POSTGRES_DB:-jobagent_db}
+      - JOB_AGENT_URL=http://job-find-agent:8000
+      - NVIDIA_API_KEY=${NVIDIA_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # -------------------------------------------------------------
+  # 🚀 Agent 3: Playwright Stealth Apply Engine (Port 8002)
+  # -------------------------------------------------------------
+  job-apply-agent:
+    build:
+      context: ./job-apply-agent
+      dockerfile: Dockerfile
+    container_name: sensa-job-apply-agent
+    restart: always
+    ports:
+      - "8002:8002"
+    environment:
+      - DATABASE_URL=sqlite+aiosqlite:///./data/apply_audit.db
+      - JOB_FIND_AGENT_URL=http://job-find-agent:8000
+      - RESUME_PREP_AGENT_URL=http://resume-prep-agent:8001
+      - BROWSER_HEADLESS=true
+    volumes:
+      - ./job-apply-agent/data/sessions:/app/data/sessions
+      - ./job-apply-agent/data/screenshots:/app/data/screenshots
+
+  # -------------------------------------------------------------
+  # 🧠 Agent 0: Executive Manager & Router (Port 8005)
+  # -------------------------------------------------------------
+  manager-agent:
+    build:
+      context: ./manager-agent
+      dockerfile: Dockerfile
+    container_name: sensa-manager-agent
+    restart: always
+    ports:
+      - "8005:8005"
+    environment:
+      - JOB_FIND_AGENT_URL=http://job-find-agent:8000
+      - RESUME_PREP_AGENT_URL=http://resume-prep-agent:8001
+      - JOB_APPLY_AGENT_URL=http://job-apply-agent:8002
+      - FRONTEND_URL=http://agent-ui:3001
+      - NVIDIA_API_KEY=${NVIDIA_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    depends_on:
+      - job-find-agent
+      - resume-prep-agent
+      - job-apply-agent
+
+  # -------------------------------------------------------------
+  # 💻 Sensa AI Web Client (Port 3001)
+  # -------------------------------------------------------------
+  agent-ui:
+    build:
+      context: ./agent-ui
+      dockerfile: Dockerfile
+    container_name: sensa-agent-ui
+    restart: always
+    ports:
+      - "3001:80"
+    depends_on:
+      - manager-agent
+
+volumes:
+  postgres_data:

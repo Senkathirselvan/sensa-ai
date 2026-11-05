@@ -1,0 +1,8 @@
+ollama>=0.3.0
+streamlit>=1.38.0
+pypdf>=4.3.1
+duckduckgo-search>=6.2.0
+python-dotenv>=1.0.0
+python-jobspy>=0.1.0
+pandas>=2.0.0
+playwright>=1.40.0

@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  resume-prep-backend:
+    build: .
+    container_name: resume-prep-backend
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    environment:
+      - PORT=8001
+      - HOST=0.0.0.0
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@job-agent-db:5432/job_agent
+      - JOB_AGENT_URL=http://job-agent-backend:8000
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    volumes:
+      - ./data:/app/data
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - job_agent_network
+
+networks:
+  job_agent_network:
+    name: job-find-agent_default
+    external: true
+

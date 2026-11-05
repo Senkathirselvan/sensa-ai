@@ -1,0 +1,26 @@
+[
+  {
+    "title": "Remote Python Backend Developer",
+    "company": "Automattic",
+    "url": "https://automattic.com/work-with-us/",
+    "snippet": "We are looking for a Python Developer experienced with Django, FastAPI, PostgreSQL, and building distributed systems. 100% remote worldwide."
+  },
+  {
+    "title": "Senior Python and Cloud Engineer",
+    "company": "Canonical",
+    "url": "https://canonical.com/careers",
+    "snippet": "Join the Ubuntu team building cloud infrastructure tooling. Requirements: Strong Python 3, Linux systems, Docker, Kubernetes, and REST APIs."
+  },
+  {
+    "title": "Software Engineer Python Data Platforms",
+    "company": "GitLab",
+    "url": "https://about.gitlab.com/jobs/",
+    "snippet": "Seeking a Python Engineer to develop scalable microservices and data processing pipelines. Skills: Python, SQL, asynchronous programming, Git."
+  },
+  {
+    "title": "Full Stack Python FastAPI Engineer",
+    "company": "Zapier",
+    "url": "https://zapier.com/jobs/",
+    "snippet": "Build integrations and developer-facing APIs. Experience with Python, FastAPI, React, and third-party API integrations is preferred."
+  }
+]

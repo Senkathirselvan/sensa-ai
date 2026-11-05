@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{FULL_NAME}} — {{PRIMARY_TITLE}} | {{SECONDARY_TITLE}}</title>
+  <style>
+    :root {
+      --primary: var(--primary);
+      --accent: var(--accent);
+      --bg-light: #f0f9ff;
+      --text: #1e293b;
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 9mm 12mm 9mm 12mm;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    
+    body {
+      font-family: var(--font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
+      color: #1e293b;
+      background: #ffffff;
+      font-size: 8.9pt;
+      line-height: 1.48;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Screen display: Two distinct A4 paper sheets */
+    @media screen {
+      body {
+        background: #0f172a12;
+        padding: 24px 0;
+      }
+      .resume-page {
+        background: #ffffff;
+        width: 210mm;
+        margin: 0 auto 24px auto;
+        padding: 9mm 12mm;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+        box-sizing: border-box;
+      }
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+        padding: 0;
+      }
+      .resume-page {
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+        width: 100%;
+      }
+    }
+
+    /* Page container */
+    .resume-page {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 279mm;
+      max-height: 279mm;
+      overflow: hidden;
+      padding-bottom: 1mm;
+    }
+
+    .page-break {
+      page-break-before: always;
+      break-before: page;
+    }
+
+    /* Avoid orphan lines & awkward card splits in WeasyPrint */
+    .job-entry, .experience-item, .project-card, .project-entry, .section-block, .cert-item, .timeline-item {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    h2, h3, .section-title, .job-title-row, .role-company-line {
+      break-after: avoid;
+      page-break-after: avoid;
+    }
+
+    .page-content {
+      flex: 1;
+    }
+
+    /* Page Footers */
+    .page-footer {
+      border-top: 1px solid #cbd5e1;
+      padding-top: 4px;
+      margin-top: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 7.5pt;
+      color: #64748b;
+    }
+    .page-footer a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    /* Header */
+    .header {
+      border-bottom: 2.5px solid var(--accent);
+      padding-bottom: 8px;
+      margin-bottom: 11px;
+    }
+    .name-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 3px;
+    }
+    .name {
+      font-size: 22pt;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: -0.5px;
+      line-height: 1.05;
+    }
+    .headline {
+      font-size: 10.2pt;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-top: 3px;
+    }
+    .exp-badge {
+      font-size: 8pt;
+      background: var(--bg-light);
+      color: var(--accent);
+      border: 1px solid #bae6fd;
+      padding: 3.5px 10px;
+      border-radius: 4px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      display: inline-block;
+    }
+    .contact-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 13px;
+      font-size: 8.2pt;
+      color: #334155;
+      margin-top: 6px;
+    }
+    .contact-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .contact-item svg {
+      width: 12px;
+      height: 12px;
+      fill: var(--accent);
+      flex-shrink: 0;
+    }
+    .contact-item a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    /* Page 2 Mini Header */
+    .page2-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 7px;
+      margin-bottom: 10px;
+    }
+    .page2-title {
+      font-size: 11.5pt;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: -0.2px;
+    }
+    .page2-sub {
+      font-size: 8.5pt;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+    .page2-contact {
+      font-size: 7.8pt;
+      color: #64748b;
+    }
+    
+    /* Summary Box */
+    .summary-box {
+      background: #f8fafc;
+      border-left: 3.5px solid var(--accent);
+      border-top: 1px solid #f1f5f9;
+      border-right: 1px solid #f1f5f9;
+      border-bottom: 1px solid #f1f5f9;
+      padding: 9px 12px;
+      margin-bottom: 11px;
+      font-size: 8.5pt;
+      color: #334155;
+      line-height: 1.5;
+      border-radius: 0 4px 4px 0;
+    }
+    .summary-box strong {
+      color: var(--primary);
+    }
+
+    /* Metrics Ribbon */
+    .metrics-ribbon {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 7px;
+      margin-bottom: 11px;
+    }
+    .metric-card {
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+      padding: 7px 8px;
+      text-align: center;
+    }
+    .metric-val {
+      font-size: 10.8pt;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1.1;
+      font-family: ui-monospace, Menlo, Monaco, monospace;
+    }
+    .metric-lbl {
+      font-size: 6.9pt;
+      font-weight: 600;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      margin-top: 2px;
+    }
+
+    /* Section Headings */
+    .section-title {
+      font-size: 9.8pt;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      border-bottom: 1.5px solid #cbd5e1;
+      padding-bottom: 2.5px;
+      margin-top: 10px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .section-title::before {
+      content: "";
+      display: inline-block;
+      width: 4px;
+      height: 12px;
+      background: var(--accent);
+      border-radius: 1px;
+    }
+
+    /* Skills Grid */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 9px 10px;
+      margin-bottom: 11px;
+    }
+    .skill-cat {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+      padding: 7.2px 10px;
+    }
+    .skill-cat-title {
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 2px;
+      font-size: 8.3pt;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .skill-cat-title span {
+      color: var(--accent);
+      font-size: 8pt;
+    }
+    .skill-cat-items {
+      color: #475569;
+      font-size: 8pt;
+      line-height: 1.4;
+    }
+
+    /* Highlight / Scope Box */
+    .arch-scope-box {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-left: 3.5px solid #16a34a;
+      border-radius: 4px;
+      padding: 8px 11px; margin-top: 8px;
+      font-size: 8.2pt;
+      color: #166534;
+      line-height: 1.46;
+    }
+    .arch-scope-title {
+      font-weight: 700;
+      font-size: 8.3pt;
+      color: #14532d;
+      margin-bottom: 2px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* Experience Items */
+    .job-item {
+      margin-bottom: 9px;
+    }
+    .job-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 1.5px;
+    }
+    .job-role {
+      font-size: 9.4pt;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .job-company {
+      font-size: 8.8pt;
+      font-weight: 600;
+      color: var(--accent);
+    }
+    .job-meta {
+      font-size: 8pt;
+      color: #64748b;
+      font-weight: 500;
+      text-align: right;
+    }
+    .job-stack {
+      display: inline-block;
+      font-size: 7.3pt;
+      color: var(--accent);
+      background: #f0f9ff;
+      border: 1px solid var(--bg-light);
+      padding: 1.5px 7px;
+      border-radius: 3px;
+      margin-bottom: 4px;
+      font-weight: 600;
+      font-family: ui-monospace, Menlo, Monaco, monospace;
+    }
+    .job-bullets {
+      list-style-type: disc;
+      padding-left: 15px;
+      font-size: 8.3pt;
+      color: #334155;
+      line-height: 1.48;
+    }
+    .job-bullets li {
+      margin-bottom: 4.2px;
+    }
+    .job-bullets li strong {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    /* Case Studies / Project Cards */
+    .case-studies-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .case-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+      padding: 10px 12px;
+    }
+    .case-badge {
+      display: inline-block;
+      font-size: 6.6pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--bg-light);
+      padding: 1px 5px;
+      border-radius: 2px;
+      margin-bottom: 2px;
+    }
+    .case-title {
+      font-size: 8.3pt;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 3px;
+      line-height: 1.25;
+    }
+    .case-desc {
+      font-size: 7.7pt;
+      color: #475569;
+      line-height: 1.42;
+    }
+
+    /* Two-Column Grid for Credentials */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .item-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+      padding: 8px 11px;
+      margin-bottom: 6px;
+    }
+    .item-card-title {
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 8.3pt;
+      line-height: 1.25;
+    }
+    .item-card-sub {
+      color: #64748b;
+      font-size: 7.5pt;
+      margin-top: 1.5px;
+    }
+
+    /* Architecture & Security Pillar Grid */
+    .pillar-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 9px;
+      margin-bottom: 9px;
+    }
+    .pillar-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+      padding: 8.5px 11px;
+    }
+    .pillar-title {
+      font-size: 8.2pt;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 2.5px;
+    }
+    .pillar-desc {
+      font-size: 7.8pt;
+      color: #475569;
+      line-height: 1.44;
+    }
+
+    /* Methodologies & Standards Pill Row */
+    .methods-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 7px;
+      margin-top: 9px;
+      margin-bottom: 9px;
+      padding: 8.5px 12px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+      font-size: 7.8pt;
+      color: #475569;
+    }
+    .methods-label {
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      font-size: 7.3pt;
+      letter-spacing: 0.5px;
+    }
+    .method-chip {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      padding: 1.5px 6.5px;
+      border-radius: 3px;
+      font-size: 7.4pt;
+      color: #334155;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== PAGE 1 ==================== -->
+  <div class="resume-page page-1">
+    <div class="page-content">
+
+      <!-- Header -->
+      <header class="header">
+        <div class="name-title-row">
+          <div>
+            <h1 class="name">{{FULL_NAME}}</h1>
+            <div class="headline">{{PRIMARY_TITLE}} | {{SECONDARY_TITLE}}</div>
+          </div>
+          <div style="text-align: right;">
+            <span class="exp-badge">{{EXPERIENCE_BADGE_TEXT}}</span>
+          </div>
+        </div>
+        <div class="contact-bar">
+          <span class="contact-item">
+            <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z"/></svg>
+            {{LOCATION}}
+          </span>
+          <span class="contact-item">
+            <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            <a href="mailto:{{EMAIL_ADDRESS}}">{{EMAIL_ADDRESS}}</a>
+          </span>
+          <span class="contact-item">
+            <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+            {{PHONE_NUMBER}}
+          </span>
+          <span class="contact-item">
+            <svg viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.64c-.9 0-1.63.73-1.63 1.63s.73 1.63 1.63 1.63 1.63-.73 1.63-1.63-.73-1.63-1.63-1.63z"/></svg>
+            <a href="https://{{LINKEDIN_URL}}" target="_blank">{{LINKEDIN_LABEL}}</a>
+          </span>
+          <span class="contact-item">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.47 2 2 6.47 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+            <a href="https://{{GITHUB_URL}}" target="_blank">{{GITHUB_LABEL}}</a>
+          </span>
+        </div>
+      </header>
+
+      <!-- Executive Profile Summary -->
+      <div class="summary-box">
+        <strong>{{SUMMARY_TITLE}}</strong> {{SUMMARY_TEXT}}
+      </div>
+
+      <!-- Key Metrics Highlights Ribbon -->
+      <div class="metrics-ribbon">
+        <div class="metric-card">
+          <div class="metric-val">{{METRIC_1_VALUE}}</div>
+          <div class="metric-lbl">{{METRIC_1_LABEL}}</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-val">{{METRIC_2_VALUE}}</div>
+          <div class="metric-lbl">{{METRIC_2_LABEL}}</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-val">{{METRIC_3_VALUE}}</div>
+          <div class="metric-lbl">{{METRIC_3_LABEL}}</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-val">{{METRIC_4_VALUE}}</div>
+          <div class="metric-lbl">{{METRIC_4_LABEL}}</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-val">{{METRIC_5_VALUE}}</div>
+          <div class="metric-lbl">{{METRIC_5_LABEL}}</div>
+        </div>
+      </div>
+
+      <!-- Technical Architecture & Core Competencies Matrix -->
+      <div class="section-title">{{SKILLS_SECTION_TITLE}}</div>
+      <div class="skills-grid">
+        <div class="skill-cat">
+          <div class="skill-cat-title"><span>✦</span> {{SKILL_CAT_1_TITLE}}</div>
+          <div class="skill-cat-items">{{SKILL_CAT_1_ITEMS}}</div>
+        </div>
+        <div class="skill-cat">
+          <div class="skill-cat-title"><span>✦</span> {{SKILL_CAT_2_TITLE}}</div>
+          <div class="skill-cat-items">{{SKILL_CAT_2_ITEMS}}</div>
+        </div>
+        <div class="skill-cat">
+          <div class="skill-cat-title"><span>✦</span> {{SKILL_CAT_3_TITLE}}</div>
+          <div class="skill-cat-items">{{SKILL_CAT_3_ITEMS}}</div>
+        </div>
+        <div class="skill-cat">
+          <div class="skill-cat-title"><span>✦</span> {{SKILL_CAT_4_TITLE}}</div>
+          <div class="skill-cat-items">{{SKILL_CAT_4_ITEMS}}</div>
+        </div>
+      </div>
+
+      <!-- Professional Experience (Part 1) -->
+      <div class="section-title">Professional Experience</div>
+
+      <!-- Job 1 -->
+      <div class="job-item">
+        <div class="job-header">
+          <div>
+            <span class="job-role">{{JOB_1_ROLE}}</span> &mdash; 
+            <span class="job-company">{{JOB_1_COMPANY}}</span>
+          </div>
+          <div class="job-meta">{{JOB_1_DATES}} | {{JOB_1_LOCATION}}</div>
+        </div>
+        <div class="job-stack">Stack: {{JOB_1_STACK}}</div>
+        <ul class="job-bullets">
+          <li>{{JOB_1_BULLET_1}}</li>
+          <li>{{JOB_1_BULLET_2}}</li>
+          <li>{{JOB_1_BULLET_3}}</li>
+          <li>{{JOB_1_BULLET_4}}</li>
+          <li>{{JOB_1_BULLET_5}}</li>
+          <li>{{JOB_1_BULLET_6}}</li>
+          <li>{{JOB_1_BULLET_7}}</li>
+          <li>{{JOB_1_BULLET_8}}</li>
+        </ul>
+
+        <!-- Optional Scope Highlight Box -->
+        <div class="arch-scope-box">
+          <div class="arch-scope-title">
+            <span>✔</span> {{JOB_1_HIGHLIGHT_TITLE}}
+          </div>
+          <div>{{JOB_1_HIGHLIGHT_DESC}}</div>
+        </div>
+      </div>
+
+      <!-- Job 2 (Moved to Page 1 to balance document with zero empty whitespace) -->
+      <div class="job-item">
+        <div class="job-header">
+          <div>
+            <span class="job-role">{{JOB_2_ROLE}}</span> &mdash; 
+            <span class="job-company">{{JOB_2_COMPANY}}</span>
+          </div>
+          <div class="job-meta">{{JOB_2_DATES}} | {{JOB_2_LOCATION}}</div>
+        </div>
+        <div class="job-stack">Stack: {{JOB_2_STACK}}</div>
+        <ul class="job-bullets">
+          <li>{{JOB_2_BULLET_1}}</li>
+          <li>{{JOB_2_BULLET_2}}</li>
+          <li>{{JOB_2_BULLET_3}}</li>
+          <li>{{JOB_2_BULLET_4}}</li>
+          <li>{{JOB_2_BULLET_5}}</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Page 1 Footer -->
+    <footer class="page-footer">
+      <span>{{FULL_NAME}} — {{PRIMARY_TITLE}} | {{SECONDARY_TITLE}}</span>
+      <span>Page 1 of 2</span>
+    </footer>
+  </div>
+
+
+  <!-- ==================== PAGE 2 ==================== -->
+  <div class="resume-page page-2 page-break">
+    <div class="page-content">
+
+      <!-- Page 2 Mini Header -->
+      <div class="page2-header">
+        <div>
+          <span class="page2-title">{{FULL_NAME}}</span>
+          <span style="color: #cbd5e1; margin: 0 4px;">|</span>
+          <span class="page2-sub">Professional Experience &amp; Credentials (Cont.)</span>
+        </div>
+        <div class="page2-contact">{{EMAIL_ADDRESS}} &bull; {{PHONE_NUMBER}} &bull; {{LOCATION}}</div>
+      </div>
+
+      <div class="section-title">Professional Experience (Continued)</div>
+
+      <!-- Job 3 -->
+      <div class="job-item">
+        <div class="job-header">
+          <div>
+            <span class="job-role">{{JOB_3_ROLE}}</span> &mdash; 
+            <span class="job-company">{{JOB_3_COMPANY}}</span>
+          </div>
+          <div class="job-meta">{{JOB_3_DATES}} | {{JOB_3_LOCATION}}</div>
+        </div>
+        <div class="job-stack">Stack: {{JOB_3_STACK}}</div>
+        <ul class="job-bullets">
+          <li>{{JOB_3_BULLET_1}}</li>
+          <li>{{JOB_3_BULLET_2}}</li>
+          <li>{{JOB_3_BULLET_3}}</li>
+          <li>{{JOB_3_BULLET_4}}</li>
+        </ul>
+      </div>
+
+      <!-- Job 4 -->
+      <div class="job-item">
+        <div class="job-header">
+          <div>
+            <span class="job-role">{{JOB_4_ROLE}}</span> &mdash; 
+            <span class="job-company">{{JOB_4_COMPANY}}</span>
+          </div>
+          <div class="job-meta">{{JOB_4_DATES}} | {{JOB_4_LOCATION}}</div>
+        </div>
+        <div class="job-stack">Stack: {{JOB_4_STACK}}</div>
+        <ul class="job-bullets">
+          <li>{{JOB_4_BULLET_1}}</li>
+          <li>{{JOB_4_BULLET_2}}</li>
+          <li>{{JOB_4_BULLET_3}}</li>
+          <li>{{JOB_4_BULLET_4}}</li>
+        </ul>
+      </div>
+
+      <!-- Job 5 -->
+      <div class="job-item">
+        <div class="job-header">
+          <div>
+            <span class="job-role">{{JOB_5_ROLE}}</span> &mdash; 
+            <span class="job-company">{{JOB_5_COMPANY}}</span>
+          </div>
+          <div class="job-meta">{{JOB_5_DATES}} | {{JOB_5_LOCATION}}</div>
+        </div>
+        <div class="job-stack">Stack: {{JOB_5_STACK}}</div>
+        <ul class="job-bullets">
+          <li>{{JOB_5_BULLET_1}}</li>
+          <li>{{JOB_5_BULLET_2}}</li>
+          <li>{{JOB_5_BULLET_3}}</li>
+          <li>{{JOB_5_BULLET_4}}</li>
+        </ul>
+      </div>
+
+      <!-- Job 6 -->
+      <div class="job-item">
+        <div class="job-header">
+          <div>
+            <span class="job-role">{{JOB_6_ROLE}}</span> &mdash; 
+            <span class="job-company">{{JOB_6_COMPANY}}</span>
+          </div>
+          <div class="job-meta">{{JOB_6_DATES}} | {{JOB_6_LOCATION}}</div>
+        </div>
+        <div class="job-stack">Stack: {{JOB_6_STACK}}</div>
+        <ul class="job-bullets">
+          <li>{{JOB_6_BULLET_1}}</li>
+          <li>{{JOB_6_BULLET_2}}</li>
+          <li>{{JOB_6_BULLET_3}}</li>
+          <li>{{JOB_6_BULLET_4}}</li>
+        </ul>
+      </div>
+
+      <!-- Case Studies / Projects -->
+      <div class="section-title">{{CASE_STUDIES_SECTION_TITLE}}</div>
+      <div class="case-studies-grid" style="{{CARDS_GRID_STYLE}}">
+        <div class="case-card">
+          <span class="case-badge">{{CASE_1_BADGE}}</span>
+          <div class="case-title">{{CASE_1_TITLE}}</div>
+          <div class="case-desc">{{CASE_1_DESC}}</div>
+        </div>
+        <div class="case-card">
+          <span class="case-badge">{{CASE_2_BADGE}}</span>
+          <div class="case-title">{{CASE_2_TITLE}}</div>
+          <div class="case-desc">{{CASE_2_DESC}}</div>
+        </div>
+        <div class="case-card" style="{{CASE_3_CARD_STYLE}}">
+          <span class="case-badge">{{CASE_3_BADGE}}</span>
+          <div class="case-title">{{CASE_3_TITLE}}</div>
+          <div class="case-desc">{{CASE_3_DESC}}</div>
+        </div>
+      </div>
+
+      <!-- Two Column: Certifications & Education / Awards -->
+      <div class="two-col">
+        <div>
+          <div class="section-title">Certifications &amp; Education</div>
+          <div class="item-card">
+            <div class="item-card-title">{{CERT_1_TITLE}}</div>
+            <div class="item-card-sub">{{CERT_1_SUB}}</div>
+          </div>
+          <div class="item-card">
+            <div class="item-card-title">{{CERT_2_TITLE}}</div>
+            <div class="item-card-sub">{{CERT_2_SUB}}</div>
+          </div>
+          <div class="item-card">
+            <div class="item-card-title">{{EDU_1_TITLE}}</div>
+            <div class="item-card-sub">{{EDU_1_SUB}}</div>
+          </div>
+          <div class="item-card">
+            <div class="item-card-title">{{EDU_2_TITLE}}</div>
+            <div class="item-card-sub">{{EDU_2_SUB}}</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="section-title">Honours &amp; Enterprise Awards</div>
+          <div class="item-card">
+            <div class="item-card-title">{{AWARD_1_TITLE}}</div>
+            <div class="item-card-sub">{{AWARD_1_SUB}}</div>
+          </div>
+          <div class="item-card">
+            <div class="item-card-title">{{AWARD_2_TITLE}}</div>
+            <div class="item-card-sub">{{AWARD_2_SUB}}</div>
+          </div>
+          <div class="item-card">
+            <div class="item-card-title">{{AWARD_3_TITLE}}</div>
+            <div class="item-card-sub">{{AWARD_3_SUB}}</div>
+          </div>
+          <div class="item-card">
+            <div class="item-card-title">{{AWARD_4_TITLE}}</div>
+            <div class="item-card-sub">{{AWARD_4_SUB}}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Distributed System Design & Resiliency Pillar -->
+      <div class="pillar-grid">
+        <div class="pillar-card">
+          <div class="pillar-title">⚙️ Distributed System Design &amp; Concurrency</div>
+          <div class="pillar-desc">Engineered asynchronous worker pipelines, optimistic database locking, and Redis-backed session management for resilient high-concurrency workloads.</div>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-title">🛡️ Enterprise Security &amp; Identity Governance</div>
+          <div class="pillar-desc">Enforced strict OAuth2/Authentik SSO authentication, multi-tenant RBAC policies, and comprehensive audit trails preventing data cross-contamination.</div>
+        </div>
+      </div>
+
+      <!-- Methodologies Strip -->
+      <div class="methods-row">
+        <span class="methods-label">Methodologies &amp; Standards:</span>
+        <span class="method-chip">{{METHOD_1}}</span>
+        <span class="method-chip">{{METHOD_2}}</span>
+        <span class="method-chip">{{METHOD_3}}</span>
+        <span class="method-chip">{{METHOD_4}}</span>
+        <span class="method-chip">{{METHOD_5}}</span>
+        <span class="method-chip">{{METHOD_6}}</span>
+        <span class="method-chip">{{METHOD_7}}</span>
+        <span class="method-chip">{{METHOD_8}}</span>
+        <span class="method-chip">{{METHOD_9}}</span>
+      </div>
+
+      <!-- Engineering Practices & Operational Excellence Box -->
+      <div class="arch-scope-box" style="margin-top: 8px; background: #f8fafc; border: 1px solid #e2e8f0; border-left: 3.5px solid var(--accent); color: #334155; padding: 10px 14px;">
+        <div class="arch-scope-title" style="color: var(--primary); margin-bottom: 2.5px;">
+          <span style="color: var(--accent);">⚡</span> Enterprise Backend Competency &amp; Immediate Production Impact
+        </div>
+        <div style="font-size: 8.3pt; line-height: 1.5; color: #475569;">
+          Demonstrated end-to-end backend engineering across multi-tenant SaaS architectures, asynchronous job queues, and high-concurrency transactional APIs. Experienced in diagnosing and resolving concurrency race conditions, securing identity flows via JWT/OAuth2/Authentik SSO, and optimizing relational schemas for demanding production environments. Proven track record of translating complex technical requirements into maintainable, scalable, and zero-defect backend solutions ready for immediate production deployment.
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Page 2 Footer -->
+    <footer class="page-footer">
+      <span>{{FULL_NAME}} &bull; Portfolio: <a href="https://{{PORTFOLIO_URL}}" target="_blank">{{PORTFOLIO_LABEL}}</a></span>
+      <span>Page 2 of 2</span>
+    </footer>
+  </div>
+
+</body>
+</html>
+

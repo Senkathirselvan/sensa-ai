@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{FULL_NAME}} — Resume</title>
+  <style>
+    :root {
+      --primary: #111827;
+      --accent: #1e3a8a;
+      --bg-light: #f8fafc;
+      --text: #1f2937;
+      --border-rule: #cbd5e1;
+      --muted: #6b7280;
+      --font-body: 'Liberation Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 10mm 13mm 11mm 13mm;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--text);
+      background: #ffffff;
+      font-size: 8.65pt;
+      line-height: 1.38;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Screen display: distinct A4 sheets preview */
+    @media screen {
+      body {
+        background: #0f172a12;
+        padding: 24px 0;
+      }
+      .resume-page {
+        background: #ffffff;
+        width: 210mm;
+        margin: 0 auto 24px auto;
+        padding: 10mm 13mm 11mm 13mm;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+        box-sizing: border-box;
+        min-height: 297mm;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+        padding: 0;
+      }
+      .resume-page {
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+        width: 100%;
+        min-height: 100%;
+        page-break-after: always;
+        break-after: page;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .page-break {
+        page-break-before: always;
+        break-before: page;
+      }
+    }
+
+    .page-content {
+      flex: 1 0 auto;
+    }
+
+    /* Header */
+    .header {
+      margin-bottom: 7px;
+    }
+    .candidate-name {
+      font-size: 18.5pt;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: 0.3px;
+      line-height: 1.15;
+      margin-bottom: 3px;
+    }
+    .candidate-headline {
+      font-size: 9.8pt;
+      font-weight: 600;
+      color: var(--accent);
+      line-height: 1.32;
+      margin-bottom: 4px;
+    }
+    .contact-row {
+      font-size: 8.4pt;
+      color: #374151;
+      line-height: 1.4;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 6px;
+    }
+    .contact-row a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .contact-sep {
+      color: #9ca3af;
+      margin: 0 2px;
+    }
+    .header-rule {
+      border-bottom: 1px solid var(--border-rule);
+      margin-bottom: 7px;
+    }
+
+    /* Section titles */
+    .section-title {
+      font-size: 10.4pt;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: capitalize;
+      border-bottom: 1.2px solid var(--border-rule);
+      padding-bottom: 2px;
+      margin-top: 8px;
+      margin-bottom: 4px;
+      letter-spacing: 0.1px;
+    }
+
+    /* Summary */
+    .summary-text {
+      font-size: 8.65pt;
+      line-height: 1.38;
+      color: #1f2937;
+      text-align: justify;
+      margin-bottom: 6px;
+    }
+    .summary-text strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    /* Technical Skills */
+    .skills-list {
+      list-style-type: none;
+      padding-left: 0;
+      margin-bottom: 6px;
+    }
+    .skills-item {
+      font-size: 8.5pt;
+      line-height: 1.36;
+      color: #1f2937;
+      margin-bottom: 2px;
+      padding-left: 14px;
+      position: relative;
+    }
+    .skills-item::before {
+      content: "•";
+      position: absolute;
+      left: 2px;
+      color: #111827;
+      font-weight: bold;
+    }
+    .skills-item strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    /* Experience */
+    .company-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-top: 4px;
+      margin-bottom: 1px;
+    }
+    .company-name-loc {
+      font-size: 9.5pt;
+      font-weight: 700;
+      color: #111827;
+    }
+    .company-dates {
+      font-size: 8.5pt;
+      font-weight: 500;
+      color: var(--muted);
+      text-align: right;
+    }
+    .role-title {
+      font-size: 9.1pt;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 3px;
+    }
+    .experience-intro {
+      font-size: 8.55pt;
+      line-height: 1.35;
+      color: #374151;
+      margin-bottom: 5px;
+      text-align: justify;
+    }
+    .experience-intro strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    /* Modules */
+    .module-item {
+      margin-top: 5px;
+      margin-bottom: 3px;
+    }
+    .module-title {
+      font-size: 8.95pt;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 2px;
+    }
+    .bullet-list {
+      list-style-type: none;
+      padding-left: 0;
+      margin-bottom: 3px;
+    }
+    .bullet-item {
+      font-size: 8.5pt;
+      line-height: 1.35;
+      color: #1f2937;
+      margin-bottom: 2px;
+      padding-left: 14px;
+      position: relative;
+    }
+    .bullet-item::before {
+      content: "•";
+      position: absolute;
+      left: 2px;
+      color: #111827;
+      font-weight: bold;
+    }
+    .bullet-item strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    /* Sub-bullets for projects */
+    .sub-bullet-list {
+      list-style-type: none;
+      padding-left: 12px;
+      margin-top: 1.5px;
+      margin-bottom: 2px;
+    }
+    .sub-bullet-item {
+      font-size: 8.35pt;
+      line-height: 1.33;
+      color: #374151;
+      margin-bottom: 1.5px;
+      padding-left: 14px;
+      position: relative;
+    }
+    .sub-bullet-item::before {
+      content: "◦";
+      position: absolute;
+      left: 2px;
+      color: #4b5563;
+      font-size: 9pt;
+    }
+    .sub-bullet-item strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    /* Projects */
+    .project-block {
+      margin-top: 5px;
+      margin-bottom: 4px;
+    }
+    .project-title {
+      font-size: 9.2pt;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 1px;
+    }
+    .project-stack {
+      font-size: 8.15pt;
+      font-style: italic;
+      color: #4b5563;
+      margin-bottom: 2.5px;
+      line-height: 1.3;
+    }
+
+    /* Education */
+    .edu-block {
+      margin-top: 4px;
+      margin-bottom: 4px;
+    }
+    .edu-degree {
+      font-size: 9.1pt;
+      font-weight: 700;
+      color: #111827;
+    }
+    .edu-meta {
+      font-size: 8.5pt;
+      color: #374151;
+      margin-top: 1px;
+      margin-bottom: 2px;
+    }
+    .edu-coursework {
+      font-size: 8.15pt;
+      font-style: italic;
+      color: #4b5563;
+      line-height: 1.32;
+    }
+
+    /* Community */
+    .community-block {
+      margin-top: 4px;
+      margin-bottom: 4px;
+    }
+
+    /* Page Footer */
+    .page-footer {
+      border-top: 1px solid var(--border-rule);
+      padding-top: 3.5px;
+      margin-top: 6px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 7.8pt;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== PAGE 1 ==================== -->
+  <div class="resume-page page-1">
+    <div class="page-content">
+
+      <!-- Header -->
+      <header class="header">
+        <h1 class="candidate-name">{{FULL_NAME}}</h1>
+        <div class="candidate-headline">{{HEADLINE}}</div>
+        <div class="contact-row">
+          <span>{{EMAIL}}</span>
+          <span class="contact-sep">•</span>
+          <span>{{PHONE}}</span>
+          <span class="contact-sep">•</span>
+          <span><a href="https://{{LINKEDIN_URL}}" target="_blank">{{LINKEDIN_DISPLAY}}</a></span>
+          <span class="contact-sep">•</span>
+          <span><a href="https://{{GITHUB_URL}}" target="_blank">{{GITHUB_DISPLAY}}</a></span>
+          <span class="contact-sep">•</span>
+          <span>{{LOCATION}}</span>
+        </div>
+        <div class="header-rule"></div>
+      </header>
+
+      <!-- Professional Summary -->
+      <section class="section-block">
+        <div class="section-title">Professional Summary</div>
+        <p class="summary-text">{{SUMMARY_PARAGRAPH}}</p>
+      </section>
+
+      <!-- Technical Skills -->
+      <section class="section-block">
+        <div class="section-title">Technical Skills</div>
+        <ul class="skills-list">
+          {{SKILLS_LIST_HTML}}
+        </ul>
+      </section>
+
+      <!-- Professional Experience (Part 1: Modules 1 to 3) -->
+      <section class="section-block">
+        <div class="section-title">Professional Experience</div>
+        <div class="company-header-row">
+          <span class="company-name-loc">{{JOB_1_COMPANY}} — {{JOB_1_LOCATION}}</span>
+          <span class="company-dates">{{JOB_1_DATES}}</span>
+        </div>
+        <div class="role-title">{{JOB_1_ROLE}}</div>
+        <p class="experience-intro">{{JOB_1_INTRO}}</p>
+
+        {{EXPERIENCE_PAGE1_HTML}}
+      </section>
+
+    </div>
+
+    <!-- Page 1 Footer -->
+    <footer class="page-footer">
+      <span>{{FULL_NAME}} &bull; Resume</span>
+      <span>Page 1 of 2</span>
+    </footer>
+  </div>
+
+  <!-- ==================== PAGE 2 ==================== -->
+  <div class="resume-page page-2 page-break">
+    <div class="page-content">
+
+      <!-- Professional Experience (Part 2: Modules 4 to 6) -->
+      <section class="section-block">
+        {{EXPERIENCE_PAGE2_HTML}}
+      </section>
+
+      <!-- Projects -->
+      <section class="section-block">
+        <div class="section-title">Projects</div>
+        {{PROJECTS_SECTION_HTML}}
+      </section>
+
+      <!-- Education -->
+      <section class="section-block">
+        <div class="section-title">Education</div>
+        {{EDUCATION_SECTION_HTML}}
+      </section>
+
+      <!-- Community & Open Source -->
+      <section class="section-block">
+        <div class="section-title">Community &amp; Open Source</div>
+        <ul class="bullet-list">
+          {{COMMUNITY_SECTION_HTML}}
+        </ul>
+      </section>
+
+    </div>
+
+    <!-- Page 2 Footer -->
+    <footer class="page-footer">
+      <span>{{FULL_NAME}} &bull; Resume</span>
+      <span>Page 2 of 2</span>
+    </footer>
+  </div>
+
+</body>
+</html>
+

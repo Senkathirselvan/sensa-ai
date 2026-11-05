@@ -1,0 +1,69 @@
+# ==========================================
+# Sensa AI Monorepo - Git Ignore Rules
+# ==========================================
+
+# 1. Virtual Environments & Packages
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+node_modules/
+.npm/
+.yarn/
+dist/
+build/
+*.egg-info/
+
+# 2. Python Bytecode & Caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# 3. Environment & Secret Keys
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.cert
+.totp_secrets
+
+# 4. Sensitive User Sessions & Authentication Cookies
+*_session.json*
+**/data/sessions/*
+!**/data/sessions/.gitkeep
+naukri_session.json
+linkedin_session.json
+indeed_session.json
+
+# 5. Generated PDF Resumes & Screenshots (Keep directory structure)
+**/data/exports/*
+!**/data/exports/.gitkeep
+**/data/screenshots/*
+!**/data/screenshots/.gitkeep
+proof_*.png
+fail_*.png
+login_required_*.png
+*.log
+
+# 6. Local SQLite Databases
+*.db
+*.sqlite
+*.sqlite3
+!**/data/master/**
+
+# 7. OS & IDE Metadata
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
